@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LyricAI Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body class="min-h-screen bg-[#0D1117] text-slate-100">
+    <div class="ambient-glow"></div>
+    <header class="relative z-10">
+      <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
+        <div class="flex items-center gap-3">
+          <div class="logo-orb"></div>
+          <div>
+            <p class="font-orbitron text-lg uppercase tracking-[0.3em]">LyricAI</p>
+            <p class="text-xs text-slate-400">Studio</p>
+          </div>
+        </div>
+        <div class="hidden items-center gap-6 text-sm text-slate-300 md:flex">
+          <span class="pill">SaaS Premium</span>
+          <span class="pill">100% Browser</span>
+          <span class="pill">Local Storage</span>
+        </div>
+      </nav>
+    </header>
+
+    <main class="relative z-10 mx-auto grid max-w-7xl gap-6 px-6 pb-16 pt-4 lg:grid-cols-[2.2fr_1fr]">
+      <section class="glass-panel p-6 md:p-8">
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 class="font-orbitron text-3xl text-white md:text-4xl">LyricAI Studio</h1>
+            <p class="mt-2 text-sm text-slate-300">
+              Gere letras de música realistas com estilo, emoção e estrutura profissional.
+            </p>
+          </div>
+          <div class="flex items-center gap-2 text-xs text-slate-400">
+            <span class="status-dot"></span>
+            IA simulada pronta
+          </div>
+        </div>
+
+        <form id="lyric-form" class="mt-8 grid gap-5">
+          <div class="grid gap-4 md:grid-cols-2">
+            <div>
+              <label class="form-label" for="theme">Tema da Música</label>
+              <input
+                id="theme"
+                name="theme"
+                type="text"
+                required
+                placeholder="Ex: Recomeço depois da tempestade"
+                class="form-input"
+              />
+            </div>
+            <div>
+              <label class="form-label" for="genre">Gênero</label>
+              <select id="genre" name="genre" class="form-input" required>
+                <option value="Pop">Pop</option>
+                <option value="Rock">Rock</option>
+                <option value="Rap">Rap</option>
+                <option value="R&B">R&amp;B</option>
+                <option value="Indie">Indie</option>
+                <option value="MPB">MPB</option>
+                <option value="Eletrônica">Eletrônica</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2">
+            <div>
+              <label class="form-label" for="mood">Mood / Humor</label>
+              <select id="mood" name="mood" class="form-input" required>
+                <option value="Energético">Energético</option>
+                <option value="Melancólico">Melancólico</option>
+                <option value="Triste">Triste</option>
+                <option value="Romântico">Romântico</option>
+                <option value="Inspirador">Inspirador</option>
+                <option value="Contemplativo">Contemplativo</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label" for="keywords">Palavras-chave</label>
+              <input
+                id="keywords"
+                name="keywords"
+                type="text"
+                placeholder="Ex: aurora, mar, despedida"
+                class="form-input"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label" for="notes">Direção Criativa (opcional)</label>
+            <textarea
+              id="notes"
+              name="notes"
+              rows="3"
+              placeholder="Detalhe o tom, referências ou narrativa desejada..."
+              class="form-input resize-none"
+            ></textarea>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-3">
+            <button type="submit" class="primary-btn">
+              <span>Gerar Letra</span>
+            </button>
+            <button type="button" id="clear-history" class="ghost-btn">Limpar histórico</button>
+            <span id="loader" class="loader hidden">Gerando letra com IA...</span>
+          </div>
+        </form>
+
+        <div class="mt-8">
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 class="font-orbitron text-xl">Letra Gerada</h2>
+              <p class="text-xs text-slate-400">Clique em uma música do histórico para recarregar.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button id="copy-btn" class="ghost-btn">Copiar</button>
+              <button id="download-btn" class="primary-btn">Baixar TXT</button>
+            </div>
+          </div>
+          <div id="lyric-output" class="lyric-output mt-4">
+            <p class="text-slate-400">Nenhuma letra gerada ainda. Preencha o formulário e clique em Gerar.</p>
+          </div>
+        </div>
+      </section>
+
+      <aside class="glass-panel p-6">
+        <div class="flex items-center justify-between">
+          <h3 class="font-orbitron text-lg">Histórico</h3>
+          <span id="history-count" class="text-xs text-slate-400">0 itens</span>
+        </div>
+        <div id="history-list" class="mt-4 flex flex-col gap-3"></div>
+      </aside>
+    </main>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/ai-engine.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
