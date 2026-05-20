@@ -12,6 +12,10 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: "Inter", sans-serif;
 }
@@ -53,6 +57,20 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.nav-link {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  border-color: rgba(124, 58, 237, 0.6);
+  color: #fff;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+}
+
 .status-dot {
   width: 8px;
   height: 8px;
@@ -79,10 +97,28 @@ body {
   transition: border 0.2s ease, box-shadow 0.2s ease;
 }
 
+.input-compact {
+  padding: 10px 12px;
+  font-size: 0.85rem;
+}
+
 .form-input:focus {
   outline: none;
   border-color: rgba(124, 58, 237, 0.8);
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+}
+
+.range-input {
+  width: 100%;
+  accent-color: #7c3aed;
+}
+
+.range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 6px;
 }
 
 .primary-btn,
@@ -113,6 +149,23 @@ body {
 
 .ghost-btn:hover {
   background: rgba(148, 163, 184, 0.2);
+}
+
+.chip-toggle {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.chip-toggle.active {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.4), rgba(236, 72, 153, 0.35));
+  border-color: rgba(124, 58, 237, 0.8);
+  color: #fff;
 }
 
 .loader {
@@ -195,6 +248,12 @@ body {
 
 .history-actions button.active {
   color: #fbbf24;
+}
+
+.history-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .toast {

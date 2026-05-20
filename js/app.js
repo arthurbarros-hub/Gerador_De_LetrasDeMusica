@@ -7,8 +7,15 @@ const toast = document.getElementById("toast");
 const copyBtn = document.getElementById("copy-btn");
 const downloadBtn = document.getElementById("download-btn");
 const clearHistoryBtn = document.getElementById("clear-history");
+const historySearch = document.getElementById("history-search");
+const filterFavoritesBtn = document.getElementById("filter-favorites");
+const historySort = document.getElementById("history-sort");
+const favoritesCount = document.getElementById("history-favorites-count");
 
 let currentLyric = null;
+let showFavoritesOnly = false;
+let historyQuery = "";
+let historyOrder = "newest";
 
 function showToast(message) {
   toast.textContent = message;
@@ -51,15 +58,17 @@ function renderLyric(lyric) {
 }
 
 function renderHistory(items) {
-  historyCount.textContent = `${items.length} itens`;
+  const filtered = applyHistoryFilters(items);
+  historyCount.textContent = `${filtered.length} itens`;
   historyList.innerHTML = "";
+  favoritesCount.textContent = items.filter((item) => item.favorite).length;
 
-  if (!items.length) {
+  if (!filtered.length) {
     historyList.innerHTML = '<p class="text-sm text-slate-400">Sem histórico ainda.</p>';
     return;
   }
 
-  items.forEach((item) => {
+  filtered.forEach((item) => {
     const card = document.createElement("div");
     card.className = "history-card";
     card.innerHTML = `
@@ -86,6 +95,8 @@ function getFormData() {
     mood: formData.get("mood"),
     keywords: formData.get("keywords").trim(),
     notes: formData.get("notes").trim(),
+    intensity: formData.get("intensity"),
+    rhymeScheme: formData.get("rhyme"),
   };
 }
 
@@ -104,6 +115,7 @@ async function handleSubmit(event) {
 
   currentLyric = lyric;
   renderLyric(lyric);
+  document.getElementById("resultado").scrollIntoView({ behavior: "smooth" });
 
   const historyItem = addHistoryItem({
     title: lyric.title,
@@ -124,6 +136,8 @@ function loadFromHistory(id) {
   if (!item) return;
   currentLyric = item.lyric;
   renderLyric(item.lyric);
+  populateForm(item.payload);
+  document.getElementById("resultado").scrollIntoView({ behavior: "smooth" });
   showToast("Letra carregada do histórico.");
 }
 
@@ -183,6 +197,46 @@ function formatPlainText(lyric) {
   return `${lyric.title}\n${lyric.intro}\n\n${blocks}`;
 }
 
+function populateForm(payload) {
+  if (!payload) return;
+  form.elements.theme.value = payload.theme || "";
+  form.elements.genre.value = payload.genre || "Pop";
+  form.elements.mood.value = payload.mood || "Energético";
+  form.elements.keywords.value = payload.keywords || "";
+  form.elements.notes.value = payload.notes || "";
+  if (form.elements.intensity) {
+    form.elements.intensity.value = payload.intensity || 3;
+  }
+  if (form.elements.rhyme) {
+    form.elements.rhyme.value = payload.rhymeScheme || "ABAB";
+  }
+}
+
+function applyHistoryFilters(items) {
+  let result = [...items];
+  if (showFavoritesOnly) {
+    result = result.filter((item) => item.favorite);
+  }
+  if (historyQuery) {
+    const query = historyQuery.toLowerCase();
+    result = result.filter(
+      (item) =>
+        item.title.toLowerCase().includes(query) ||
+        item.meta.toLowerCase().includes(query)
+    );
+  }
+
+  if (historyOrder === "oldest") {
+    result.reverse();
+  }
+
+  if (historyOrder === "favorites") {
+    result.sort((a, b) => Number(b.favorite) - Number(a.favorite));
+  }
+
+  return result;
+}
+
 function initHistory() {
   const items = loadHistory();
   renderHistory(items);
@@ -196,6 +250,19 @@ clearHistoryBtn.addEventListener("click", () => {
   clearHistory();
   renderHistory([]);
   showToast("Histórico limpo.");
+});
+historySearch.addEventListener("input", (event) => {
+  historyQuery = event.target.value.trim();
+  renderHistory(loadHistory());
+});
+filterFavoritesBtn.addEventListener("click", () => {
+  showFavoritesOnly = !showFavoritesOnly;
+  filterFavoritesBtn.classList.toggle("active", showFavoritesOnly);
+  renderHistory(loadHistory());
+});
+historySort.addEventListener("change", (event) => {
+  historyOrder = event.target.value;
+  renderHistory(loadHistory());
 });
 
 initHistory();
